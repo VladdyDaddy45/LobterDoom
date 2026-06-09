@@ -3,9 +3,15 @@
 #include <SDL3_image/SDL_image.h>
 #include "graphics/graphics.h"
 
-static SDL_Window *window = NULL;
-static SDL_Renderer *renderer = NULL;
+SDL_Window *window = NULL;
+SDL_Renderer *renderer = NULL;
 SDL_Surface *icon;
+
+int width, height;
+
+// currently unused; planned to make a dependency injector.
+typedef void (RenderCallback)(SDL_Renderer *Renderer);
+RenderCallback *RenderCallbacks[] = {};
 
 int InitGraphics(void **appstate, int argc, char *argv[])
 {
@@ -35,7 +41,6 @@ int InitGraphics(void **appstate, int argc, char *argv[])
 
 int InputEvent(void *appstate, SDL_Event *event)
 {
-    printf("InputEvent\n");
     if (event->type == SDL_EVENT_QUIT) {
         return SDL_APP_SUCCESS;
     }
@@ -57,8 +62,6 @@ int RenderFrame(void *appstate)
 {
     SDL_SetRenderDrawColor(renderer, 0,0,0,255);
     SDL_RenderClear(renderer);
-    SDL_SetRenderDrawColor(renderer, 255,0,0,255);
-    SDL_RenderPoint(renderer, 50.0f, 50.0f);
 
     SDL_RenderPresent(renderer);
 
@@ -72,3 +75,4 @@ int CleanGraphics(void *appstate, SDL_AppResult result)
     SDL_DestroyWindow(window);
     SDL_Quit();
 }
+
