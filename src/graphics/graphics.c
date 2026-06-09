@@ -1,7 +1,5 @@
-#define SDL_MAIN_USE_CALLBACKS 1
 #include <stdio.h>
 #include <SDL3/SDL.h>
-#include <SDL3/SDL_main.h>
 #include <SDL3_image/SDL_image.h>
 #include "graphics/graphics.h"
 
@@ -9,10 +7,8 @@ static SDL_Window *window = NULL;
 static SDL_Renderer *renderer = NULL;
 SDL_Surface *icon;
 
-/* This function runs once at startup. */
-SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
+int InitGraphics(void **appstate, int argc, char *argv[])
 {
-    printf("Initializing Window and Renderer...\n");
     SDL_SetAppMetadata("Example Renderer Clear", "1.0", "com.example.renderer-clear");
 
     if (!SDL_Init(SDL_INIT_VIDEO)) {
@@ -33,12 +29,13 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
         SDL_SetWindowIcon(window, icon);
     }
 
-    return SDL_APP_CONTINUE;  /* carry on with the program! */
+    printf("App Initialized Successfully\n");
+    return SDL_APP_CONTINUE;
 }
 
-/* This function runs when a new event (mouse input, keypresses, etc) occurs. */
-SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
+int InputEvent(void *appstate, SDL_Event *event)
 {
+    printf("InputEvent\n");
     if (event->type == SDL_EVENT_QUIT) {
         return SDL_APP_SUCCESS;
     }
@@ -56,8 +53,7 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
     return SDL_APP_CONTINUE;
 }
 
-/* This function runs once per frame, and is the heart of the program. */
-SDL_AppResult SDL_AppIterate(void *appstate)
+int RenderFrame(void *appstate)
 {
     SDL_SetRenderDrawColor(renderer, 0,0,0,255);
     SDL_RenderClear(renderer);
@@ -69,11 +65,10 @@ SDL_AppResult SDL_AppIterate(void *appstate)
     return SDL_APP_CONTINUE;
 }
 
-void SDL_AppQuit(void *appstate, SDL_AppResult result)
+int CleanGraphics(void *appstate, SDL_AppResult result)
 {
     SDL_DestroySurface(icon);
-}
-
-void test() {
-    printf("Hello, world");
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
 }

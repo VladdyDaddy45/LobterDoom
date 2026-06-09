@@ -6,8 +6,9 @@
 
 #include <SDL3/SDL.h>
 
-int InitGraphics(void);
-void RenderFrame(void);
-void CleanGraphics(void);
+int InitGraphics(void **appstate, int argc, char *argv[]);
+int InputEvent(void *appstate, SDL_Event *event);
+int RenderFrame(void *appstate);
+int CleanGraphics(void *appstate, SDL_AppResult result);
 
 #endif
