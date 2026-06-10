@@ -58,7 +58,7 @@ int InputEvent(void *appstate, SDL_Event *event)
     return SDL_APP_CONTINUE;
 }
 
-int RenderFrame(void *appstate)
+inline int RenderFrame(void *appstate)
 {
     SDL_SetRenderDrawColor(renderer, 0,0,0,255);
     SDL_RenderClear(renderer);
@@ -76,3 +76,7 @@ int CleanGraphics(void *appstate, SDL_AppResult result)
     SDL_Quit();
 }
 
+void PushPipeline() 
+{
+
+}

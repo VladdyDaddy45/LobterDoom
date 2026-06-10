@@ -22,6 +22,6 @@ typedef struct {
     Uint8 b;
 } Pixel;
 typedef void (RenderCallback)(SDL_Renderer *Renderer);
-//RenderCallback* AddRenderCallback(RenderCallback callback);
+RenderCallback* AddRenderCallback(RenderCallback callback);
 
 #endif

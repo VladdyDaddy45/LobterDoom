@@ -1,6 +1,7 @@
 #define SDL_MAIN_USE_CALLBACKS 1
 #include <stdio.h>
 #include <math.h>
+#include "utils/list.h"
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
@@ -15,9 +16,29 @@ typedef struct {
 
 Player plr;
 
+void fortnite() {
+    printf("evil!!!");
+}
+
+void fort() {
+    printf("gortnite");
+}
+
+typedef void (*testtype)(void);
+
 // Surrogate 'Main' function
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
 { 
+    List test = List_new();
+    List_add(&test,&fortnite);
+    List_add(&test,&fort);
+    
+    for (int i = 0; i < sizeof(&(test.arr)); i++) {
+        printf(&(test.arr[i]));
+        //testtype func = (testtype) (&(test.arr[i]));
+        //func();
+    }
+
     printf("App Initializing...\n");
     return InitGraphics(appstate,argc,argv);
 }
