@@ -10,9 +10,10 @@ set "incl = %cd%/include"
 
 gcc -c -I"H:\SDL\x86_64-w64-mingw32\include" -I"%cd%/include" src/main.c -o build/main.o -L"H:\SDL\x86_64-w64-mingw32\lib" -lSDL3 -lSDL3_image
 gcc -c -I"H:\SDL\x86_64-w64-mingw32\include" -I"%cd%/include" src/graphics/graphics.c -o build/graphics.o -L"H:\SDL\x86_64-w64-mingw32\lib" -lSDL3 -lSDL3_image
-gcc -c -I"%cd%/include" src/utils/list.c -o build/list.o
+gcc -c -I"%cd%/include" src/utils/funclist.c -o build/funclist.o
+gcc -c src/utils/const.c -o build/const.o
 
-gcc build/main.o build/graphics.o build/list.o -o main.exe -L"H:\SDL\x86_64-w64-mingw32\lib" -lSDL3 -lSDL3_image
+gcc build/main.o build/const.o build/graphics.o build/funclist.o -o main.exe -L"H:\SDL\x86_64-w64-mingw32\lib" -lSDL3 -lSDL3_image
 
 IF %ERRORLEVEL% EQU 0 (
     echo Compilation successful, running program...

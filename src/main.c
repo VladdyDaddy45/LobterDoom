@@ -1,12 +1,14 @@
 #define SDL_MAIN_USE_CALLBACKS 1
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
-#include "utils/list.h"
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 #include <SDL3_image/SDL_image.h>
+
 #include "graphics/graphics.h"
+#include "utils/funclist.h"
 
 typedef struct {
     double x;
@@ -16,28 +18,27 @@ typedef struct {
 
 Player plr;
 
-void fortnite() {
-    printf("evil!!!");
+void func() {
+    printf("working\n");
 }
 
-void fort() {
-    printf("gortnite");
+void test() {
+    printf("working but cooler\n");
 }
-
-typedef void (*testtype)(void);
 
 // Surrogate 'Main' function
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
-{ 
-    List test = List_new();
-    List_add(&test,&fortnite);
-    List_add(&test,&fort);
+{   
+    printf("Starting program\n");
+    FuncList list = FuncList_new();
+    FuncList_add(&list, (void*)func);
+    FuncList_add(&list, (void*)test);
     
-    for (int i = 0; i < sizeof(&(test.arr)); i++) {
-        printf(&(test.arr[i]));
-        //testtype func = (testtype) (&(test.arr[i]));
-        //func();
-    }
+    function method = (function)list.arr[0];
+    method();
+
+    int thing = 12;
+    printf("thingamajig: %d\n",&thing);
 
     printf("App Initializing...\n");
     return InitGraphics(appstate,argc,argv);
