@@ -1,17 +1,17 @@
 #include <stdio.h>
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
+
 #include "graphics/graphics.h"
+#include "utils/funclist.h"
 
 SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
 SDL_Surface *icon;
 
-int width, height;
+int Width, Height;
 
-// currently unused; planned to make a dependency injector.
-typedef void (RenderCallback)(SDL_Renderer *Renderer);
-RenderCallback *RenderCallbacks[] = {};
+FuncList Pipeline;
 
 int InitGraphics(void **appstate, int argc, char *argv[])
 {
@@ -35,6 +35,9 @@ int InitGraphics(void **appstate, int argc, char *argv[])
         SDL_SetWindowIcon(window, icon);
     }
 
+    Pipeline = FuncList_new();
+    SDL_GetWindowSize(window, &Width, &Height);
+
     printf("App Initialized Successfully\n");
     return SDL_APP_CONTINUE;
 }
@@ -50,18 +53,20 @@ int InputEvent(void *appstate, SDL_Event *event)
         }
     }
     if (event->type == SDL_EVENT_WINDOW_RESIZED) {
-        int width, height;
-        SDL_GetWindowSize(window, &width, &height);
-        SDL_SetRenderLogicalPresentation(renderer, width, height, SDL_LOGICAL_PRESENTATION_LETTERBOX);
+        SDL_GetWindowSize(window, &Width, &Height);
+        SDL_SetRenderLogicalPresentation(renderer, Width, Height, SDL_LOGICAL_PRESENTATION_LETTERBOX);
     }
 
     return SDL_APP_CONTINUE;
 }
 
-inline int RenderFrame(void *appstate)
+int RenderFrame(void *appstate)
 {
     SDL_SetRenderDrawColor(renderer, 0,0,0,255);
     SDL_RenderClear(renderer);
+
+    // Calling the render pipeline
+    for (int i = 0; i < Pipeline.size; i++) { Pipeline.arr[i](); }
 
     SDL_RenderPresent(renderer);
 
@@ -76,7 +81,8 @@ int CleanGraphics(void *appstate, SDL_AppResult result)
     SDL_Quit();
 }
 
-void PushPipeline() 
-{
-
+void PushPipeline(AnyFunc callback)
+{   
+    printf("Pushing to pipeline\n");
+    FuncList_add(&Pipeline, callback);
 }

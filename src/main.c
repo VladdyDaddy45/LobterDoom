@@ -8,7 +8,6 @@
 #include <SDL3_image/SDL_image.h>
 
 #include "graphics/graphics.h"
-#include "utils/funclist.h"
 
 typedef struct {
     double x;
@@ -18,30 +17,21 @@ typedef struct {
 
 Player plr;
 
-void func() {
-    printf("working\n");
-}
 
-void test() {
-    printf("working but cooler\n");
+void draw() {
+    SDL_SetRenderDrawColor(renderer,255,0,0,255);
+    SDL_RenderPoint(renderer,(float)Width-25.0f,(float)Height-25.0f);
 }
 
 // Surrogate 'Main' function
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
 {   
-    printf("Starting program\n");
-    FuncList list = FuncList_new();
-    FuncList_add(&list, (void*)func);
-    FuncList_add(&list, (void*)test);
-    
-    function method = (function)list.arr[0];
-    method();
+    printf("Starting program...\n");
+    SDL_AppResult r = InitGraphics(appstate,argc,argv);
 
-    int thing = 12;
-    printf("thingamajig: %d\n",&thing);
+    PushPipeline(draw);
 
-    printf("App Initializing...\n");
-    return InitGraphics(appstate,argc,argv);
+    return r;
 }
 
 // Input Events
@@ -55,17 +45,6 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
 SDL_AppResult SDL_AppIterate(void *appstate)
 {
     SDL_AppResult r = RenderFrame(appstate);
-    //printf("Rendering\n");
-
-    /*
-    int width, height;
-    SDL_GetWindowSize(window,&width,&height);
-    printf(&width);
-    printf(", ");
-    printf(&height);
-    printf("\n");
-    SDL_RenderPoint(renderer,width-50,height-50);
-    */
     SDL_RenderPoint(renderer,60.0f,50.0f);
     return r;
 }

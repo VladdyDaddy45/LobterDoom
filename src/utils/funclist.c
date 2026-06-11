@@ -20,55 +20,32 @@ FuncList FuncList_new() {
 }
 
 /* returns -1 if failed to add the element */
-int FuncList_add(FuncList* list, void* element)
-{
-    bool successfulMalloc = false;
-    bool newList = false;
+int FuncList_add(FuncList* list, AnyFunc element)
+{  
+    //element = (void (*)(void))element;
 
-    // swap out for list->arr == NULL when finished
-    if (list->arr == NULL) {
-        newList = true;
-    }
-
-    void** buffer = malloc((list->size+1) * sizeof(void*));
+    AnyFunc* buffer = malloc((list->size+1) * sizeof(AnyFunc));
     if (buffer == NULL) {
-        printf("List memory allocation failed\n");
         return -1;
     }
 
-    if (newList) {
+    if (list->arr == NULL) { // checking if the list is new
         buffer[0] = element;
     } else {
         for (int i = 0; i < list->size; i++) {
             buffer[i] = list->arr[i];
         }
-        buffer[list->size+1] = element;
+        free(list->arr);
+        buffer[list->size] = element;
     }
     
+    list->arr = buffer;
     list->size++;
     return 0;
+}
 
-    /*
-    int max = list->size;
-    void** buffer = malloc(list->size * sizeof(void*));
-    if (buffer == NULL) {
-        printf("List memory allocation failed");
-        list->size--;
-        return (void)NULL;
-    }
-
-    for (int i = 0; i < list->size; i++)
-    {
-        if (i == sizeof(list->arr)-1) {
-            buffer[max] = element;
-            break;
-        }
-        buffer[i] = list->arr[i];
-    }
-
-    List_free(list);
-    list->arr = buffer;
-    */
+AnyFunc FuncList_get(FuncList* list, int index) {
+    return list->arr[index];
 }
 
 void FuncList_free(FuncList* list) 
