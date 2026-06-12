@@ -8,19 +8,19 @@
 #include <SDL3_image/SDL_image.h>
 
 #include "graphics/graphics.h"
+#include "types.h"
 
 typedef struct {
-    double x;
-    double y;
-    double rot;
+    f32 x;
+    f32 y;
+    f64 rot;
 } Player;
 
 Player plr;
 
-
 void draw() {
     SDL_SetRenderDrawColor(renderer,255,0,0,255);
-    SDL_RenderPoint(renderer,(float)Width-25.0f,(float)Height-25.0f);
+    SDL_RenderPoint(renderer,(float)Width/2.0f,(float)((int)Height >> 1));
 }
 
 // Surrogate 'Main' function
