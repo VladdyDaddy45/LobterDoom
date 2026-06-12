@@ -10,18 +10,55 @@
 #include "graphics/graphics.h"
 #include "types.h"
 
+extern double PI;
+// -------------------------- game stuf
 typedef struct {
-    f32 x;
-    f32 y;
+    f64 x;
+    f64 y;
+} v2;
+
+typedef struct {
+    v2 pos;
     f64 rot;
 } Player;
 
 Player plr;
 
+i8 map[10][10] = {
+    {1,1,1,1,1,1,1,1,1,1},
+    {1,0,0,0,0,0,0,0,0,1},
+    {1,0,0,0,0,0,0,0,0,1},
+    {1,0,0,0,0,0,0,0,0,1},
+    {1,0,0,0,0,0,0,0,0,1},
+    {1,0,0,0,0,0,0,0,0,1},
+    {1,0,0,0,0,0,0,0,0,1},
+    {1,0,0,0,0,0,0,0,0,1},
+    {1,0,0,0,0,0,0,0,0,1},
+    {1,1,1,1,1,1,1,1,1,1},
+};
+
+void start() {
+    Player player = {
+        {4.0,4.0},
+        0
+    };
+
+    plr = player;
+
+    for (int y = 0; y < sizeof(map) / sizeof(map[0]); y++) {
+        for (int x = 0; x < sizeof(map[y]); x++) {
+            printf("%d ", map[y][x]);
+        }
+        printf("\n");
+    }
+}
+
 void draw() {
     SDL_SetRenderDrawColor(renderer,255,0,0,255);
-    SDL_RenderPoint(renderer,(float)Width/2.0f,(float)((int)Height >> 1));
+    SDL_RenderPoint(renderer,(float)Width/2.0f,(float)Height/2.0f);
 }
+
+// --------------------------- main stuff
 
 // Surrogate 'Main' function
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
@@ -29,6 +66,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
     printf("Starting program...\n");
     SDL_AppResult r = InitGraphics(appstate,argc,argv);
 
+    start();
     PushPipeline(draw);
 
     return r;
