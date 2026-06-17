@@ -16,7 +16,7 @@ FuncList FuncList_new() {
     return list;
 }
 
-/* returns -1 if failed to add the element */
+/* returns -1 if failed to add the element  but actually no it doesnt i lied hahhaha i gotta fix this*/
 int FuncList_add(FuncList* list, void* element)
 { 
     //element = (void (*)(void))element;
