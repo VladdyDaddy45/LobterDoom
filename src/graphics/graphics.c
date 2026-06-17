@@ -12,6 +12,7 @@ SDL_Surface *icon;
 int Width, Height;
 
 FuncList Pipeline;
+FuncList InputList;
 
 int InitGraphics(void **appstate, int argc, char *argv[])
 {
@@ -66,7 +67,11 @@ int RenderFrame(void *appstate)
     SDL_RenderClear(renderer);
 
     // Calling the render pipeline
-    for (int i = 0; i < Pipeline.size; i++) { Pipeline.arr[i](); }
+    for (int i = 0; i < Pipeline.size; i++) 
+    { 
+        ((void (*)(void)) // casting to an empty function for dereferencing
+        Pipeline.arr[i])(); 
+    }
 
     SDL_RenderPresent(renderer);
 
@@ -85,4 +90,9 @@ void PushPipeline(AnyFunc callback)
 {   
     printf("Pushing to pipeline\n");
     FuncList_add(&Pipeline, callback);
+}
+
+void AddInputEvent() 
+{
+    
 }

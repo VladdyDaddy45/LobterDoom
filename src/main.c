@@ -37,6 +37,10 @@ i8 map[10][10] = {
     {1,1,1,1,1,1,1,1,1,1},
 };
 
+void fortnite() {
+    printf("void pointers work fr\n");
+}
+
 void start() {
     Player player = {
         {4.0,4.0},
@@ -45,12 +49,13 @@ void start() {
 
     plr = player;
 
-    for (int y = 0; y < sizeof(map) / sizeof(map[0]); y++) {
-        for (int x = 0; x < sizeof(map[y]); x++) {
-            printf("%d ", map[y][x]);
-        }
-        printf("\n");
-    }
+    bool lastrow = false;
+    void* ptr = &fortnite;
+
+    printf("gortnite\n");
+    void (*func)(void);
+    func = *(void (*)(void))ptr;
+    func();
 }
 
 void draw() {

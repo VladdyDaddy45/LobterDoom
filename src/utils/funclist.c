@@ -20,11 +20,11 @@ FuncList FuncList_new() {
 }
 
 /* returns -1 if failed to add the element */
-int FuncList_add(FuncList* list, AnyFunc element)
-{  
+int FuncList_add(FuncList* list, void* element)
+{ 
     //element = (void (*)(void))element;
 
-    AnyFunc* buffer = malloc((list->size+1) * sizeof(AnyFunc));
+    void** buffer = malloc((list->size+1) * sizeof(void*));
     if (buffer == NULL) {
         return -1;
     }
@@ -44,7 +44,7 @@ int FuncList_add(FuncList* list, AnyFunc element)
     return 0;
 }
 
-AnyFunc FuncList_get(FuncList* list, int index) {
+void* FuncList_get(FuncList* list, int index) {
     return list->arr[index];
 }
 
