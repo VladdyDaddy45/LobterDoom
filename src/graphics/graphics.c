@@ -48,14 +48,16 @@ int InputEvent(void *appstate, SDL_Event *event)
     if (event->type == SDL_EVENT_QUIT) {
         return SDL_APP_SUCCESS;
     }
-    if (event->type == SDL_EVENT_KEY_DOWN) {
-        if (event->key.key == SDLK_W) {
-            printf("yo button was pressed fr\n");
-        }
-    }
     if (event->type == SDL_EVENT_WINDOW_RESIZED) {
         SDL_GetWindowSize(window, &Width, &Height);
         SDL_SetRenderLogicalPresentation(renderer, Width, Height, SDL_LOGICAL_PRESENTATION_LETTERBOX);
+    }
+
+    // custom input events
+    for (int i = 0; i < InputList.size; i++) 
+    { 
+        ((void (*)(void)) // casting to an empty function for dereferencing
+        InputList.arr[i])(); 
     }
 
     return SDL_APP_CONTINUE;
@@ -92,7 +94,7 @@ void PushPipeline(AnyFunc callback)
     FuncList_add(&Pipeline, callback);
 }
 
-void AddInputEvent() 
+void AddInputEvent(void (*callback)(SDL_Event event)) 
 {
-    
+    FuncList_add(&InputList, callback);
 }

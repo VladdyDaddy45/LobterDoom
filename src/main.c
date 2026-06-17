@@ -41,6 +41,8 @@ void fortnite() {
     printf("void pointers work fr\n");
 }
 
+extern double PI;
+
 void start() {
     Player player = {
         {4.0,4.0},
@@ -51,6 +53,8 @@ void start() {
 
     bool lastrow = false;
     void* ptr = &fortnite;
+
+    printf("%.15lf\n", PI);
 
     printf("gortnite\n");
     void (*func)(void);

@@ -2,10 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
-#include <string.h>
-#include <stdbool.h>
-
+#include "types.h"
 #include "utils/funclist.h"
 
 extern double PI;
