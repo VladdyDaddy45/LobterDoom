@@ -12,10 +12,12 @@ int InputEvent(void *appstate, SDL_Event *event);
 int RenderFrame(void *appstate);
 int CleanGraphics(void *appstate, SDL_AppResult result);
 void PushPipeline(AnyFunc callback);
+void AddInputEvent(void (*callback)(SDL_Event *event));
 
 extern SDL_Renderer* renderer;
 extern SDL_Window* window;
 extern int Width, Height;
+extern double delta;
 
 typedef struct {
     uint16_t x;

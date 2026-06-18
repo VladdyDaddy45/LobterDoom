@@ -14,6 +14,9 @@ int Width, Height;
 FuncList Pipeline;
 FuncList InputList;
 
+double current, last;
+double delta;
+
 int InitGraphics(void **appstate, int argc, char *argv[])
 {
     SDL_SetAppMetadata("Example Renderer Clear", "1.0", "com.example.renderer-clear");
@@ -39,6 +42,8 @@ int InitGraphics(void **appstate, int argc, char *argv[])
     Pipeline = FuncList_new();
     SDL_GetWindowSize(window, &Width, &Height);
 
+    last = SDL_GetPerformanceCounter();
+
     printf("App Initialized Successfully\n");
     return SDL_APP_CONTINUE;
 }
@@ -56,8 +61,8 @@ int InputEvent(void *appstate, SDL_Event *event)
     // custom input events
     for (int i = 0; i < InputList.size; i++) 
     { 
-        ((void (*)(void)) // casting to an empty function for dereferencing
-        InputList.arr[i])(); 
+        ((void (*)(SDL_Event* event)) // casting to an empty function for dereferencing
+        InputList.arr[i])(event); 
     }
 
     return SDL_APP_CONTINUE;
@@ -65,9 +70,13 @@ int InputEvent(void *appstate, SDL_Event *event)
 
 int RenderFrame(void *appstate)
 {
+    
     SDL_SetRenderDrawColor(renderer, 0,0,0,255);
     SDL_RenderClear(renderer);
 
+    current = SDL_GetPerformanceCounter();
+
+    delta = (double)(current - last) / (double)SDL_GetPerformanceFrequency();
     // Calling the render pipeline
     for (int i = 0; i < Pipeline.size; i++) 
     { 
@@ -94,7 +103,7 @@ void PushPipeline(AnyFunc callback)
     FuncList_add(&Pipeline, callback);
 }
 
-void AddInputEvent(void (*callback)(SDL_Event event)) 
+void AddInputEvent(void (*callback)(SDL_Event *event)) 
 {
     FuncList_add(&InputList, callback);
 }

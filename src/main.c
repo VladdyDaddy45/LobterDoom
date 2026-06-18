@@ -10,13 +10,16 @@
 #include "graphics/graphics.h"
 #include "types.h"
 
-extern double PI;
+const double PI = 3.141592653589793;
 // -------------------------- game stuf
 
-int maxsteps = 50;
+int maxsteps = 200;
 float step = 0.1f;
-int fidelity = 200;
+int fidelity = 80;
 int columnHeight = 1;
+int fov = 60;
+
+double speed = 0.0001;
 
 typedef struct {
     f32 x;
@@ -34,6 +37,15 @@ typedef struct {
     i8 b;
     i8 a;
 } Color;
+
+typedef struct {
+    bool W;
+    bool A;
+    bool S;
+    bool D;
+} Pressed;
+
+Pressed pressed = {0,0,0,0};
 
 Player plr;
 
@@ -60,8 +72,8 @@ double distance(v2 a, v2 b) {
 
 // use radians. degrees are for the weak.
 void move_forward(v2* pos, double dir, double dist) {
-    pos->x += dist * cos(dir);
-    pos->y += dist * sin(dir);
+    pos->x += dist * sin(dir);
+    pos->y += dist * cos(dir);
 }
 
 double rad(double deg) {
@@ -91,12 +103,10 @@ void drawRect(v2 top_left, v2 bottom_right, Color color) {
     SDL_RenderFillRect(renderer, &rect);
 }
 
-// degrees for angle.
-v2 cast(Player* plr, double angle, i8 map[10][10]) {
-    v2 pos = plr->pos;
+v2 cast(v2 pos, double angle, i8 map[10][10]) {
 
     for (i16 i = 0; i < maxsteps; i++) {
-        move_forward(&pos, rad(plr->rot-angle), step);
+        move_forward(&pos, angle, step);
         if (
             pos.x > 10 || pos.x < 0 ||
             pos.y > 10 || pos.y < 0
@@ -112,12 +122,78 @@ v2 cast(Player* plr, double angle, i8 map[10][10]) {
     return pos;
 }
 
+void input(SDL_Event *event) {
+    if (event->type == SDL_EVENT_KEY_DOWN) {
+        switch (event->key.scancode) {
+            case SDL_SCANCODE_W:
+                printf("W pressed\n");
+                pressed.W = true;
+                break;
+            case SDL_SCANCODE_A:
+                printf("A pressed\n");
+                pressed.A = true;
+                break;
+            case SDL_SCANCODE_S:
+                printf("S pressed\n");
+                pressed.S = true;
+                break;
+            case SDL_SCANCODE_D:
+                printf("D pressed\n");
+                pressed.D = true;
+                break;
+        }
+    }
+    if (event->type == SDL_EVENT_KEY_UP) {
+        switch (event->key.scancode) {
+            case SDL_SCANCODE_W:
+                printf("W unpressed\n");
+                pressed.W = false;
+                break;
+            case SDL_SCANCODE_A:
+                printf("A unpressed\n");
+                pressed.A = false;
+                break;
+            case SDL_SCANCODE_S:
+                printf("S unpressed\n");
+                pressed.S = false;
+                break;
+            case SDL_SCANCODE_D:
+                printf("D unpressed\n");
+                pressed.D = false;
+                break;
+        }
+    }
+}
+
+void movement() {
+    if (pressed.W == true) { move_forward(&(plr.pos),rad(plr.rot),delta * speed); }
+    if (pressed.S == true) { move_forward(&(plr.pos),rad(plr.rot),delta * -speed); }
+    if (pressed.A == true) { plr.rot -= .1; }
+    if (pressed.D == true) { plr.rot += .1; }
+
+    if (plr.rot < 0) {
+        plr.rot += 360;
+    }
+    if (plr.rot > 360) {
+        plr.rot -= 360;
+    }
+}
+
 void draw() {
-    drawRect(
-        vec2(0.0f,0.0f),
-        vec2(Width/1.5,Height/1.5),
-        (Color){255,0,0,255}
-    );
+    float space = Width / fidelity;
+    double incr = (double)fov/(double)fidelity;
+
+    for (int i = 0; i < fidelity; i++) {
+        v2 ray = cast(plr.pos, rad((plr.rot - fov/2) + (i*incr)), map);
+        double dist = distance(ray, plr.pos);
+
+        int h = (columnHeight * Height)/dist;
+        drawRect(
+            vec2(i * space,(Height/2) + (h/2)),
+            vec2((i+1)*space,(Height/2) - (h/2)),
+            (Color){255,0,0,255}
+        );
+    }
 }
 
 void start() {
@@ -127,10 +203,12 @@ void start() {
     };
 
     plr = player;
-    v2 pos = cast(&player, -5, map);
+    v2 pos = cast(plr.pos, 0, map);
     printf("X: %.5lf, Y: %.5lf\n",pos.x,pos.y);
-
+    printf("Dist: %lf\n", distance(plr.pos,pos));
     PushPipeline(draw);
+    PushPipeline(movement);
+    AddInputEvent(input);
 }
 
 // --------------------------- main stuff
