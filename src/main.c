@@ -8,18 +8,21 @@
 #include <SDL3_image/SDL_image.h>
 
 #include "graphics/graphics.h"
+#include "utils/fpsCounter.h"
 #include "types.h"
 
-const double PI = 3.141592653589793;
+//const double PI = 3.141592653589793;
+extern double PI;
+
 // -------------------------- game stuf
 
 int maxsteps = 200;
 float step = 0.1f;
 int fidelity = 80;
-int columnHeight = 1;
+double columnHeight = 1;
 int fov = 60;
 
-double speed = 0.0001;
+double speed = 4;
 
 typedef struct {
     f32 x;
@@ -51,8 +54,8 @@ Player plr;
 
 i8 map[10][10] = {
     {1,1,1,1,1,1,1,1,1,1},
-    {1,0,0,0,0,0,0,0,0,1},
-    {1,0,0,0,0,0,0,0,0,1},
+    {0,0,0,0,0,0,0,0,0,1},
+    {1,1,1,0,0,0,0,1,1,1},
     {1,0,0,0,0,0,0,0,0,1},
     {1,0,0,0,0,0,0,0,0,1},
     {1,0,0,0,0,0,0,0,0,1},
@@ -126,39 +129,34 @@ void input(SDL_Event *event) {
     if (event->type == SDL_EVENT_KEY_DOWN) {
         switch (event->key.scancode) {
             case SDL_SCANCODE_W:
-                printf("W pressed\n");
                 pressed.W = true;
                 break;
             case SDL_SCANCODE_A:
-                printf("A pressed\n");
                 pressed.A = true;
                 break;
             case SDL_SCANCODE_S:
-                printf("S pressed\n");
                 pressed.S = true;
                 break;
             case SDL_SCANCODE_D:
-                printf("D pressed\n");
                 pressed.D = true;
+                break;
+            case SDL_SCANCODE_V:
+                printf("FPS: %.5lf, DeltaTime: %.5lf\n", 1.0/DeltaTime, DeltaTime);
                 break;
         }
     }
     if (event->type == SDL_EVENT_KEY_UP) {
         switch (event->key.scancode) {
             case SDL_SCANCODE_W:
-                printf("W unpressed\n");
                 pressed.W = false;
                 break;
             case SDL_SCANCODE_A:
-                printf("A unpressed\n");
                 pressed.A = false;
                 break;
             case SDL_SCANCODE_S:
-                printf("S unpressed\n");
                 pressed.S = false;
                 break;
             case SDL_SCANCODE_D:
-                printf("D unpressed\n");
                 pressed.D = false;
                 break;
         }
@@ -166,10 +164,10 @@ void input(SDL_Event *event) {
 }
 
 void movement() {
-    if (pressed.W == true) { move_forward(&(plr.pos),rad(plr.rot),delta * speed); }
-    if (pressed.S == true) { move_forward(&(plr.pos),rad(plr.rot),delta * -speed); }
-    if (pressed.A == true) { plr.rot -= .1; }
-    if (pressed.D == true) { plr.rot += .1; }
+    if (pressed.W == true) { move_forward(&(plr.pos),rad(plr.rot),DeltaTime *  speed); }
+    if (pressed.S == true) { move_forward(&(plr.pos),rad(plr.rot),DeltaTime * -speed); }
+    if (pressed.A == true) { plr.rot -= DeltaTime * 90; }
+    if (pressed.D == true) { plr.rot += DeltaTime * 90; }
 
     if (plr.rot < 0) {
         plr.rot += 360;
@@ -180,14 +178,15 @@ void movement() {
 }
 
 void draw() {
-    float space = Width / fidelity;
+    fidelity = (double)Width;
+    float space = (double)Width / fidelity;
     double incr = (double)fov/(double)fidelity;
 
     for (int i = 0; i < fidelity; i++) {
         v2 ray = cast(plr.pos, rad((plr.rot - fov/2) + (i*incr)), map);
         double dist = distance(ray, plr.pos);
 
-        int h = (columnHeight * Height)/dist;
+        int h = (int)((columnHeight * (double)Height)/dist);
         drawRect(
             vec2(i * space,(Height/2) + (h/2)),
             vec2((i+1)*space,(Height/2) - (h/2)),
@@ -204,9 +203,10 @@ void start() {
 
     plr = player;
     v2 pos = cast(plr.pos, 0, map);
-    printf("X: %.5lf, Y: %.5lf\n",pos.x,pos.y);
-    printf("Dist: %lf\n", distance(plr.pos,pos));
+    //printf("X: %.5lf, Y: %.5lf\n",pos.x,pos.y);
+    //printf("Dist: %lf\n", distance(plr.pos,pos));
     PushPipeline(draw);
+    PushPipeline(fpscounter);
     PushPipeline(movement);
     AddInputEvent(input);
 }
@@ -242,5 +242,5 @@ SDL_AppResult SDL_AppIterate(void *appstate)
 void SDL_AppQuit(void *appstate, SDL_AppResult result)
 {
     printf("Quit: %d\n", result);
-    CleanGraphics(appstate,result); 
+    CleanGraphics(appstate,result);
 }

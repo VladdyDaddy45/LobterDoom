@@ -17,7 +17,7 @@ void AddInputEvent(void (*callback)(SDL_Event *event));
 extern SDL_Renderer* renderer;
 extern SDL_Window* window;
 extern int Width, Height;
-extern double delta;
+extern double DeltaTime;
 
 typedef struct {
     uint16_t x;

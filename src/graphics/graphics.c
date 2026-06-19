@@ -15,7 +15,7 @@ FuncList Pipeline;
 FuncList InputList;
 
 double current, last;
-double delta;
+double DeltaTime = 0.0;
 
 int InitGraphics(void **appstate, int argc, char *argv[])
 {
@@ -76,7 +76,8 @@ int RenderFrame(void *appstate)
 
     current = SDL_GetPerformanceCounter();
 
-    delta = (double)(current - last) / (double)SDL_GetPerformanceFrequency();
+    DeltaTime = (double)((current - last) / (double)SDL_GetPerformanceFrequency());
+    last = current;
     // Calling the render pipeline
     for (int i = 0; i < Pipeline.size; i++) 
     { 
